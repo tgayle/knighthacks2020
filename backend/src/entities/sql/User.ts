@@ -5,11 +5,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import argon2 from "argon2";
 import jsonwebtoken from "jsonwebtoken";
 import { CONN_SQL } from "../../db";
+import UserInterests from "./UserInterests";
 
 export enum SchoolLevel {
   HS_FRESH = "hs_fresh",
@@ -26,7 +29,7 @@ export enum SchoolLevel {
 }
 
 export enum Ethnicity {
-  // American Indian/Alaskan NAtive
+  // American Indian/Alaskan Native
   AI_AN = "ai_an",
   ASIAN = "asian",
   BLACK = "black",
@@ -69,6 +72,9 @@ export default class User extends BaseEntity {
   @Column()
   mostEducation: SchoolLevel = SchoolLevel.NONE;
 
+  @OneToMany(() => UserInterests, (interests) => interests.user, { lazy: true })
+  interests!: UserInterests[];
+
   @BeforeInsert()
   @BeforeUpdate()
   async presave() {
@@ -86,7 +92,7 @@ export default class User extends BaseEntity {
     );
   }
 
-  clean() {
+  async clean() {
     return {
       id: this.id,
       firstName: this.firstName,
@@ -95,6 +101,7 @@ export default class User extends BaseEntity {
       email: this.email,
       gpa: this.gpa,
       mostEducation: this.mostEducation,
+      interests: (await this.interests).map((i) => i.interest),
     };
   }
 }

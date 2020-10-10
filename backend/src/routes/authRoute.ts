@@ -2,6 +2,7 @@ import { Router } from "express";
 import { getConnection } from "typeorm";
 import { CONN_SQL } from "../db";
 import User, { Ethnicity, SchoolLevel } from "../entities/sql/User";
+import UserInterests from "../entities/sql/UserInterests";
 
 const router = Router();
 
@@ -15,7 +16,8 @@ router.post("/register", async (req, res) => {
     gpa,
     satScore,
     password,
-  } = req.body;
+    interests = [] as string[],
+  } = req.body as Record<string, string> & { interests: string[] };
 
   try {
     if (!email || !password) {
@@ -26,7 +28,10 @@ router.post("/register", async (req, res) => {
       throw new Error("First and last name are required.");
     }
 
-    if (!mostEducation || !Object.values(SchoolLevel).includes(mostEducation)) {
+    if (
+      !mostEducation ||
+      !Object.values(SchoolLevel).includes(mostEducation as SchoolLevel)
+    ) {
       throw new Error(
         `A level of education must be specified: [${Object.values(
           SchoolLevel
@@ -34,7 +39,10 @@ router.post("/register", async (req, res) => {
       );
     }
 
-    if (ethnicity && !Object.values(Ethnicity).includes(ethnicity)) {
+    if (
+      ethnicity &&
+      !Object.values(Ethnicity).includes(ethnicity as Ethnicity)
+    ) {
       throw new Error(
         `A valid ethnicity must be specified or null: [${Object.values(
           Ethnicity
@@ -45,21 +53,26 @@ router.post("/register", async (req, res) => {
     const user = new User();
     user.firstName = firstName;
     user.lastName = lastName;
-    user.ethnicity = ethnicity || null;
+    user.ethnicity = (ethnicity as Ethnicity) || null;
     user.email = email;
     user.password = password;
     user.satScore = Number.isNaN(parseInt(satScore))
       ? null
       : parseInt(satScore);
     user.gpa = parseFloat(gpa) >= 0.0 ? parseFloat(gpa) : null;
-    user.ethnicity = ethnicity;
-    user.mostEducation = mostEducation;
+    user.mostEducation = mostEducation as SchoolLevel;
+    user.interests = interests.map((i) => {
+      const interest = new UserInterests();
+      interest.user = user;
+      interest.interest = i;
+      return interest;
+    });
 
     await getConnection(CONN_SQL).getRepository(User).save(user);
 
     res.json({
       token: user.getToken(),
-      user: user.clean(),
+      user: await user.clean(),
     });
   } catch (e) {
     res.status(400).json({
