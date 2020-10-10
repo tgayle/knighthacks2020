@@ -20,6 +20,8 @@ router.post("/register", async (req, res) => {
     interests = [] as string[],
   } = req.body as Record<string, string> & { interests: string[] };
 
+  console.log(req.body);
+
   try {
     if (!email || !password) {
       throw new Error("Email and password is required");
@@ -80,10 +82,12 @@ router.post("/register", async (req, res) => {
 
     await getConnection(CONN_SQL).getRepository(User).save(user);
 
-    res.json({
+    const resp = {
       token: user.getToken(),
       user: await user.clean(),
-    });
+    };
+    console.log(resp);
+    res.json(resp);
   } catch (e) {
     res.status(400).json({
       message: e.message,
