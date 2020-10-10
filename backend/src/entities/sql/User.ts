@@ -25,6 +25,16 @@ export enum SchoolLevel {
   NONE = "none",
 }
 
+export enum Ethnicity {
+  // American Indian/Alaskan NAtive
+  AI_AN = "ai_an",
+  ASIAN = "asian",
+  BLACK = "black",
+  HISPANIC = "hispanic",
+  ISLANDER = "islander",
+  CAUCASIAN = "caucasian",
+}
+
 @Entity({ database: CONN_SQL })
 export default class User extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -43,7 +53,7 @@ export default class User extends BaseEntity {
   email!: string;
 
   @Column({ nullable: true, type: "character varying" })
-  ethnicity: string | null = null;
+  ethnicity: Ethnicity | null = null;
 
   @Column({ type: "decimal", nullable: true })
   gpa: number | null = null;
@@ -83,7 +93,6 @@ export default class User extends BaseEntity {
       lastName: this.lastName,
       ethnicity: this.ethnicity,
       email: this.email,
-      password: this.password,
       gpa: this.gpa,
       mostEducation: this.mostEducation,
     };

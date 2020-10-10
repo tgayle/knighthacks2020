@@ -39,7 +39,7 @@ export default async function requireAuth(
       .getRepository(User)
       .findOne(token.id))!;
 
-    next();
+    return next();
   } catch (e) {
     return error();
   }
