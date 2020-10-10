@@ -7,12 +7,16 @@ router.get("/search", async (req, res) => {
     max_spend: number;
     commute: boolean;
     out_of_state: boolean;
-    living_on_campus: boolean;
-    work_planned: boolean;
-    expected_years: number;
     prefer_ethnicity: boolean;
+    living_on_campus: boolean;
     loan_planned: boolean;
+    looking_for_scholarships: boolean;
+    work_planned: boolean;
+    program_length: number;
   };
+
+  console.log(req.query);
+  res.json({});
 });
 
 export default router;
