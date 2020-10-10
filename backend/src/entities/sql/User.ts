@@ -38,6 +38,13 @@ export enum Ethnicity {
   CAUCASIAN = "caucasian",
 }
 
+export enum Gender {
+  NA = "n/a",
+  MALE = "m",
+  FEMALE = "f",
+  NON_BINARY = "nb",
+}
+
 @Entity({ database: CONN_SQL })
 export default class User extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -51,6 +58,9 @@ export default class User extends BaseEntity {
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @Column()
+  gender: Gender = Gender.NA;
 
   @Column({ unique: true })
   email!: string;
@@ -100,6 +110,7 @@ export default class User extends BaseEntity {
       ethnicity: this.ethnicity,
       email: this.email,
       gpa: this.gpa,
+      gender: this.gender,
       mostEducation: this.mostEducation,
       interests: (await this.interests).map((i) => i.interest),
     };

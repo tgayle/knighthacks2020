@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { getConnection } from "typeorm";
 import { CONN_SQL } from "../db";
-import User, { Ethnicity, SchoolLevel } from "../entities/sql/User";
+import User, { Ethnicity, Gender, SchoolLevel } from "../entities/sql/User";
 import UserInterests from "../entities/sql/UserInterests";
 
 const router = Router();
@@ -15,6 +15,7 @@ router.post("/register", async (req, res) => {
     mostEducation,
     gpa,
     satScore,
+    gender,
     password,
     interests = [] as string[],
   } = req.body as Record<string, string> & { interests: string[] };
@@ -50,11 +51,20 @@ router.post("/register", async (req, res) => {
       );
     }
 
+    if (!gender || !Object.values(Gender).includes(gender as Gender)) {
+      throw new Error(
+        `A valid gender must be specified or null: [${Object.values(
+          Gender
+        ).join(", ")}]`
+      );
+    }
+
     const user = new User();
     user.firstName = firstName;
     user.lastName = lastName;
     user.ethnicity = (ethnicity as Ethnicity) || null;
     user.email = email;
+    user.gender = gender as Gender;
     user.password = password;
     user.satScore = Number.isNaN(parseInt(satScore))
       ? null
