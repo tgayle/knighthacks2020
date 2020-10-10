@@ -5,8 +5,9 @@ import {
   Entity,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { CONN_SQL } from "../../db";
 
-@Entity()
+@Entity({ database: CONN_SQL })
 export default class User extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   readonly id!: string;
@@ -22,4 +23,13 @@ export default class User extends BaseEntity {
 
   @Column({ unique: true })
   email!: string;
+
+  @Column({ nullable: true, type: "character varying" })
+  ethnicity: string | null = null;
+
+  @Column({ type: "decimal", nullable: true })
+  gpa: number | null = null;
+
+  @Column({ nullable: true, type: "integer" })
+  satScore: number | null = null;
 }

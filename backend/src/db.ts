@@ -7,6 +7,9 @@ const MONGO_URI =
   `.wcclv.gcp.mongodb.net/${process.env.MONGO_DB}` +
   "?retryWrites=true&w=majority";
 
+export const CONN_SQL = "sql_conn";
+export const CONN_MONGO = "mongo_conn";
+
 const SQL_CONNECTION: PostgresConnectionOptions = {
   type: "postgres",
   synchronize: true,
