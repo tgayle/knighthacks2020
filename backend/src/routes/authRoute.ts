@@ -14,11 +14,12 @@ router.post("/register", async (req, res) => {
     mostEducation,
     gpa,
     satScore,
-  } = req.body as Partial<User>;
+    password,
+  } = req.body;
 
   try {
-    if (!email) {
-      throw new Error("Email is required");
+    if (!email || !password) {
+      throw new Error("Email and password is required");
     }
 
     if (!firstName || !lastName) {
@@ -33,7 +34,29 @@ router.post("/register", async (req, res) => {
       );
     }
 
-    res.send("yes");
+    const user = new User();
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.ethnicity = ethnicity || null;
+    user.email = email;
+    user.password = password;
+    user.gpa = parseFloat(gpa) >= 0.0 ? parseFloat(gpa) : null;
+    user.mostEducation = mostEducation;
+
+    await getConnection(CONN_SQL).getRepository(User).save(user);
+
+    res.json({
+      user: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        ethnicity: user.ethnicity,
+        email: user.email,
+        password: user.password,
+        gpa: user.gpa,
+        mostEducation: user.mostEducation,
+      },
+    });
   } catch (e) {
     res.status(400).json({
       message: e.message,

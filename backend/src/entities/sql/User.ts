@@ -1,10 +1,13 @@
 import {
   BaseEntity,
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import argon2 from "argon2";
 import { CONN_SQL } from "../../db";
 
 export enum SchoolLevel {
@@ -47,6 +50,19 @@ export default class User extends BaseEntity {
   @Column({ nullable: true, type: "integer" })
   satScore: number | null = null;
 
+  password!: string;
+
+  @Column()
+  encryptedPassword!: string;
+
   @Column()
   mostEducation: SchoolLevel = SchoolLevel.NONE;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async presave() {
+    if (this.password) {
+      this.encryptedPassword = await argon2.hash(this.password);
+    }
+  }
 }
