@@ -207,10 +207,18 @@ export type SchoolResponse = {
   results: SchoolResult[];
 };
 
-const SCHOOL_URL = `https://api.data.gov/ed/collegescorecard/v1/schools?api_key=${process.env.COLLEGE_SCORECARD}`;
+const SCHOOL_URL = `https://api.data.gov/ed/collegescorecard/v1/schools`;
 
-export async function main() {
-  const res = (await axios.get<SchoolResponse>(SCHOOL_URL)).data;
+export async function fetchSchools(page: number = 0) {
+  const res = (
+    await axios.get<SchoolResponse>(SCHOOL_URL, {
+      params: {
+        per_page: 100,
+        page: page,
+        api_key: process.env.COLLEGE_SCORECARD,
+      },
+    })
+  ).data;
   console.log(res.metadata);
   // return res;
 
@@ -229,12 +237,16 @@ export async function main() {
   //   )
   // );
   const schools = res.results.map((r) => School.fromResponse(r));
-  console.log(inspect(schools[0], false, null, true));
+  // console.log(inspect(schools[0], false, null, true));
 
-  return res;
+  return {
+    page: res.metadata.page,
+    schools,
+    meta: res.metadata,
+  };
 }
 
-main();
+// fetchSchools();
 
 type _School = {
   school_id: number;

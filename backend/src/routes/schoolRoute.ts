@@ -1,4 +1,7 @@
 import { Router } from "express";
+import { getConnection } from "typeorm";
+import { CONN_MONGO } from "../db";
+import { School } from "../entities/nosql/School";
 
 const router = Router();
 
@@ -16,7 +19,12 @@ router.get("/search", async (req, res) => {
   };
 
   console.log(req.query);
-  res.json({});
+  res.json({
+    page: 1,
+    schools: await getConnection(CONN_MONGO).getMongoRepository(School).find({
+      take: 3,
+    }),
+  });
 });
 
 export default router;

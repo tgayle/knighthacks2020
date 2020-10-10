@@ -3,11 +3,14 @@ import express from "express";
 import { config } from "dotenv";
 config();
 import morgan from "morgan";
-import prepareDatabases from "./db";
+import prepareDatabases, { CONN_MONGO } from "./db";
 import userRoute from "./routes/userRoute";
 import authRoute from "./routes/authRoute";
 import schoolRoute from "./routes/schoolRoute";
 import requireAuth from "./middleware/requireAuth";
+import { fetchSchools } from "./tasks/school";
+import { getConnection } from "typeorm";
+import { School } from "./entities/nosql/School";
 
 const server = express();
 
@@ -23,7 +26,40 @@ server.use("/auth", authRoute);
 
 async function main() {
   await prepareDatabases();
-  server.listen(3000, () => console.log("Running at http://localhost:3000"));
+
+  let page = 57;
+  let numSeen = 0;
+
+  console.log("done!");
+  // console.log(res);
+  server.listen(3000, async () => {
+    console.log("Running at http://localhost:3000");
+
+    // while (true) {
+    //   console.log("Fetching schools...", page);
+    //   try {
+    //     const { schools, page: curr_page, meta } = await fetchSchools(page);
+
+    //     await getConnection(CONN_MONGO)
+    //       .getMongoRepository(School)
+    //       .save(schools);
+
+    //     console.log("saved, current page =", curr_page);
+
+    //     page = curr_page + 1;
+
+    //     numSeen += schools.length;
+
+    //     // await new Promise((r) => setTimeout(r, 5000));
+
+    //     if (numSeen == meta.total || schools.length == 0) {
+    //       break;
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    // }
+  });
 }
 
 main();

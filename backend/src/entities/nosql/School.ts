@@ -170,6 +170,13 @@ export class SchoolAcademicRoot {
   mechanic_repair_technology!: SchoolAcademics;
 }
 
+export class AcademicInfo {
+  @Column()
+  name!: string;
+  @Column()
+  stats!: SchoolAcademics;
+}
+
 export class SchoolAdmissions {
   @Column()
   admission_rate!: number;
@@ -219,8 +226,11 @@ export class School {
   @Column((type) => SchoolLocation)
   location!: SchoolLocation;
 
-  @Column(() => SchoolAcademicRoot)
-  academics: SchoolAcademicRoot | null = null;
+  // @Column(() => SchoolAcademicRoot)
+  // academics: SchoolAcademicRoot | null = null;
+
+  @Column(() => AcademicInfo)
+  academics: AcademicInfo[] = [];
 
   @Column(() => SchoolAdmissions)
   admissions: SchoolAdmissions | null = null;
@@ -248,7 +258,7 @@ export class School {
       res.latest.academics.program.degree;
 
     if (iterator) {
-      const academics = new SchoolAcademicRoot();
+      const academics: AcademicInfo[] = [];
 
       //@ts-expect-error
       Object.keys(iterator).forEach((program: keyof AcademicPrograms) => {
@@ -260,12 +270,15 @@ export class School {
         );
         const degree = Boolean(res.latest.academics.program.degree?.[program]);
 
-        academics[program] = {
+        const stat = new AcademicInfo();
+        stat.name = program;
+        stat.stats = {
           associate: associate,
           bachelors: bachelors,
           degree: degree,
           percentage: res.latest.academics.program_percentage?.[program] ?? 0,
         };
+        academics.push(stat);
       });
 
       school.academics = academics;
