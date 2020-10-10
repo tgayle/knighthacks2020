@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import argon2 from "argon2";
+import jsonwebtoken from "jsonwebtoken";
 import { CONN_SQL } from "../../db";
 
 export enum SchoolLevel {
@@ -64,5 +65,27 @@ export default class User extends BaseEntity {
     if (this.password) {
       this.encryptedPassword = await argon2.hash(this.password);
     }
+  }
+
+  getToken(): string {
+    return jsonwebtoken.sign(
+      {
+        id: this.id,
+      },
+      process.env.JWT_KEY!
+    );
+  }
+
+  clean() {
+    return {
+      id: this.id,
+      firstName: this.firstName,
+      lastName: this.lastName,
+      ethnicity: this.ethnicity,
+      email: this.email,
+      password: this.password,
+      gpa: this.gpa,
+      mostEducation: this.mostEducation,
+    };
   }
 }

@@ -46,16 +46,8 @@ router.post("/register", async (req, res) => {
     await getConnection(CONN_SQL).getRepository(User).save(user);
 
     res.json({
-      user: {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        ethnicity: user.ethnicity,
-        email: user.email,
-        password: user.password,
-        gpa: user.gpa,
-        mostEducation: user.mostEducation,
-      },
+      token: user.getToken(),
+      user: user.clean(),
     });
   } catch (e) {
     res.status(400).json({

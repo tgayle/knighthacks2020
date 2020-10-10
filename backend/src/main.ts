@@ -7,6 +7,7 @@ import prepareDatabases from "./db";
 import userRoute from "./routes/userRoute";
 import authRoute from "./routes/authRoute";
 import schoolRoute from "./routes/schoolRoute";
+import requireAuth from "./middleware/requireAuth";
 
 const server = express();
 
@@ -16,9 +17,9 @@ server.use(express.urlencoded({ extended: true }));
 
 server.get("/", (req, res) => res.json("hello!"));
 
-server.use("/user", userRoute);
+server.use("/user", requireAuth, userRoute);
+server.use("/school", requireAuth, schoolRoute);
 server.use("/auth", authRoute);
-server.use("/school", schoolRoute);
 
 async function main() {
   await prepareDatabases();
