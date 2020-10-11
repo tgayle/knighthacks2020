@@ -7,6 +7,7 @@ import UserInterests from "../entities/sql/UserInterests";
 const router = Router();
 
 router.post("/register", async (req, res) => {
+  console.log(`Request received at ${new Date().toLocaleTimeString()}`);
   const {
     email,
     ethnicity,

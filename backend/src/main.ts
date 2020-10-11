@@ -30,8 +30,6 @@ async function main() {
   let page = 57;
   let numSeen = 0;
 
-  console.log("done!");
-  // console.log(res);
   server.listen(3000, async () => {
     console.log("Running at http://localhost:3000");
 
@@ -40,9 +38,12 @@ async function main() {
     //   try {
     //     const { schools, page: curr_page, meta } = await fetchSchools(page);
 
-    //     await getConnection(CONN_MONGO)
-    //       .getMongoRepository(School)
-    //       .save(schools);
+    console.log("Loading courses");
+    const stuffs = await getConnection(CONN_MONGO)
+      .getMongoRepository(School)
+      .find();
+
+    console.log(stuffs.length);
 
     //     console.log("saved, current page =", curr_page);
 

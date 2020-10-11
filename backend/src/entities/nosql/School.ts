@@ -185,6 +185,12 @@ export class SchoolAdmissions {
   average_sat!: number;
 
   @Column()
+  average_gpa!: number; // not real
+
+  @Column()
+  tuition!: number;
+
+  @Column()
   average_sat_reading!: number;
 
   @Column()
